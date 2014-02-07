@@ -1,12 +1,26 @@
 jQuery(document).ready(function($){
 
+	var divInit = $( '#image-importer-init' );
+
 	if ( ! window.FileReader ){
-	
-		alert( "Your browser doesn't support the file upload feature." );
+
+		$.get(
+			ajaxurl,
+			{action:'image_importer_init_failure'},
+			function( data ){
+				$( data ).appendTo( divInit );
+			});
 		
 	} else{
 	
-		$( '.button' ).click(function(){
+		$.get(
+			ajaxurl,
+			{action:'image_importer_init_success'},
+			function( data ){
+				$( data ).appendTo( divInit );
+			});
+
+		$( document ).on('click', '.button', function(){
 			
 			var input = $( '#file' ).get(0).files[0],
 				reader = new FileReader(),

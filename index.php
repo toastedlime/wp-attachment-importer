@@ -31,13 +31,19 @@ function image_importer_options_page(){
 
 <h2>Image Importer</h2>
 
-<p>Select the WordPress eXtended RSS (WXR) file and we'll try to get the images and upload them to your blog here.</p>
+<noscript>
 
-<p>Choose a WXR (.xml) file from your computer and press upload. (<?php printf( 'Maximum size: %s' , size_format( apply_filters ( 'import_upload_size_limit', wp_max_upload_size() ) ) ); ?>)</p>
+	<div class="error">
 
-<p><input type="file" id="file"/></p>
+		<p>Sorry, but your browser doesn't have JavaScript enabled, and this plugin requires JavaScript.</p>
 
-<?php submit_button( 'Upload', 'button' ); ?>
+		<p>Please enable JavaScript for this site to continue.</p>
+
+	</div>
+
+</noscript>
+
+<div id="image-importer-init"></div>
 
 <div id="image-importer-output"></div>
 
@@ -50,7 +56,37 @@ add_action( 'admin_enqueue_scripts', 'image_importer_scripts' );
 
 add_action( 'admin_menu', 'image_importer_add_page' );
 
+add_action( 'wp_ajax_image_importer_init_success', 'image_importer_init_success' );
+
+add_action( 'wp_ajax_image_importer_init_failure', 'image_importer_init_failure' );
+
 add_action( 'wp_ajax_image_importer_upload', 'image_importer_uploader' );
+
+// AJAX functions are below this line.
+
+function image_importer_init_success(){
+?>
+	<p>Select the WordPress eXtended RSS (WXR) file and we'll try to get the images and upload them to your blog here.</p>
+
+	<p>Choose a WXR (.xml) file from your computer and press upload.</p>
+
+	<p><input type="file" id="file"/></p>
+
+	<p><button class="button">Upload</button></p>
+
+<?php
+die();}
+
+function image_importer_init_failure(){
+?>
+
+<div class="error">
+	<p>Sorry, but you're using an <strong>outdated</strong> browser that doesn't support the features required to use this plugin.</p>
+	<p>Please <a href="http://www.browsehappy.com">upgrade your browser</a> in order to use this plugin.</p>
+</div>
+
+<?php
+die();}
 
 function image_importer_uploader(){
 
