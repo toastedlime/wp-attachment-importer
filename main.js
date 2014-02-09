@@ -89,8 +89,8 @@ jQuery(document).ready(function($){
 					});
 					
 					$( '<p>Importing the attachments...</p>' ).appendTo( divOutput );
-					for( i = 0; i < postType.length; i++ ){
-						
+
+					function import_attachments(i){
 						$.ajax({
 							url: ajaxurl,
 							type: 'POST',
@@ -121,13 +121,22 @@ jQuery(document).ready(function($){
 							console.log(status);
 							$( '"<p>' + data + '</p>"' ).appendTo( divOutput );
 							
+							i++;
+							if( postType[i] ){
+								import_attachments(i);
+							} else {
+								$( '<p>All done!</p>' ).appendTo( divOutput );
+							}
+
 						})
 						.fail(function( xhr, status, error ){
 							console.err(status);
 							console.err(error);
-							$( '<p>There was an error connecting to your WordPress server</p>' ).appendTo( divOutput );
+							$( '<div class="error">There was an error connecting to the server</div>' ).appendTo( divOutput );
 						});
 					}
+					
+					import_attachments( 0 );
 					
 				}
 				
