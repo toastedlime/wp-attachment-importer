@@ -3,7 +3,7 @@
  * Plugin Name: Image Importer
  * Plugin URI: http://github.com/toastedlime/image-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.1
+ * Version: 0.2
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: Apache 2.0
@@ -70,7 +70,12 @@ function image_importer_init_success(){
 
 	<p>Choose a WXR (.xml) file from your computer and press upload.</p>
 
-	<p><input type="file" id="file"/></p>
+	<p><input type="file" name="file" id="file"/></p>
+
+	<p> Attribute uploaded images to: <br/>
+		<input type="radio" name="author" value=1 checked />&nbsp;Current User<br/>
+		<input type="radio" name="author" value=2 />&nbsp;User in import file<br/>
+		<input type="radio" name="author" value=3 />&nbsp;Select User: <?php wp_dropdown_users(); ?>
 
 	<p><button class="button">Upload</button></p>
 
@@ -108,7 +113,9 @@ function image_importer_uploader(){
 		'menu_order' => $_POST['menu_order'],
 		'post_type' => $_POST['post_type'],
 		'post_password' => $_POST['post_password'],
-		'is_sticky' => $_POST['is_sticky']
+		'is_sticky' => $_POST['is_sticky'],
+		'attribute_author1' => $_POST['author1'],
+		'attribute_author2' => $_POST['author2']
 	);
 
 	function process_attachment( $post, $url ) {
@@ -127,6 +134,25 @@ function image_importer_uploader(){
 			return new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wordpress-importer') );
 
 		$post['guid'] = $upload['url'];
+
+		// Set author per user options.
+		switch( $post['attribute_author1'] ){
+
+			case 1: // Attribute to current user.
+				$post['post_author'] = (int) wp_get_current_user()->ID;
+				break;
+
+			case 2: // Attribute to user in import file.
+				if( !username_exists( $post['post_author'] ) )
+					wp_create_user( $post['post_author'], wp_generate_password() );
+				$post['post_author'] = (int) username_exists( $post['post_author'] );
+				break;
+
+			case 3: // Attribute to selected user.
+				$post['post_author'] = (int) $post['attribute_author2'];
+				break;
+
+		}
 
 		// as per wp-admin/includes/upload.php
 		$post_id = wp_insert_attachment( $post, $upload['file'] );

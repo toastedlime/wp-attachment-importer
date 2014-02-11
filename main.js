@@ -24,8 +24,10 @@ jQuery(document).ready(function($){
 			
 			var input = $( '#file' ).get(0).files[0],
 				reader = new FileReader(),
-				divOutput = $( '#image-importer-output' );
-			
+				divOutput = $( '#image-importer-output' ),
+				author1 = $( "input[name='author']:checked" ).val(),
+				author2 = $( "select[name='user']" ).val();
+
 			divOutput.empty();
 
 			if ( ! input ){
@@ -96,6 +98,8 @@ jQuery(document).ready(function($){
 							type: 'POST',
 							data: {
 								action: 'image_importer_upload',
+								author1:author1,
+								author2:author2,
 								url:url[i],
 								title:title[i],
 								link:link[i],
