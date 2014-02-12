@@ -126,12 +126,26 @@ function image_importer_uploader(){
 
 		$upload = fetch_remote_file( $url, $post );
 		if ( is_wp_error( $upload ) )
-			return $upload;
+			return array(
+				'result' => false,
+				'type' => 'error',
+				'name' => $post['post_title'],
+				'error_code' => $upload->get_error_code(),
+				'error_msg' => $upload->get_error_message()
+			);
 
 		if ( $info = wp_check_filetype( $upload['file'] ) )
 			$post['post_mime_type'] = $info['type'];
-		else
-			return new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wordpress-importer') );
+		else {
+			$upload = new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wordpress-importer') );
+			return array(
+				'result' => false,
+				'type' => 'error',
+				'name' => $post['post_title'],
+				'error_code' => $upload->get_error_code(),
+				'error_msg' => $upload->get_error_message()
+			);
+		}
 
 		$post['guid'] = $upload['url'];
 
@@ -167,7 +181,12 @@ function image_importer_uploader(){
 			$name_new = basename( $parts_new['basename'], ".{$parts_new['extension']}" );
 		}
 
-		return $post_id;
+		return array(
+			'result' => true,
+			'type' => 'updated',
+			'name' => $post['post_title'],
+			'url' => $upload['url']
+		);
 	}
 	
 	function fetch_remote_file( $url, $post ) {

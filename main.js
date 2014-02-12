@@ -46,6 +46,7 @@ jQuery(document).ready(function($){
 						parser = new DOMParser(),
 						xml = parser.parseFromString( file, "text/xml" ),
 						url = [],
+						new_url = [],
 						title = [],
 						link = [],
 						pubDate = [],
@@ -121,10 +122,13 @@ jQuery(document).ready(function($){
 							}
 						})
 						.done(function( data, status, xhr ){
-
-							console.log(status);
-							$( '"<p>' + data + '</p>"' ).appendTo( divOutput );
-							
+							var obj = $.parseJSON( data );
+							if( obj.result ){
+								$( '<div class="' + obj.type + '">' + obj.name + ' was uploaded successfully.</div>' ).appendTo( divOutput );
+								new_url.push( obj.url );
+							} else{
+								$( '<div class="' + obj.type + '">' + obj.name + ' could not be uploaded because of an error. (<strong>' + obj.error_code + ':</strong> ' + obj.error_msg + ')</div>' ) .appendTo( divOutput );
+							}
 							i++;
 							if( postType[i] ){
 								import_attachments(i);
