@@ -3,7 +3,7 @@
  * Plugin Name: Image Importer
  * Plugin URI: http://github.com/toastedlime/image-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.2
+ * Version: 0.3
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: Apache 2.0
@@ -172,14 +172,8 @@ function image_importer_uploader(){
 		$post_id = wp_insert_attachment( $post, $upload['file'] );
 		wp_update_attachment_metadata( $post_id, wp_generate_attachment_metadata( $post_id, $upload['file'] ) );
 
-		// remap resized image URLs, works by stripping the extension and remapping the URL stub.
-		if ( preg_match( '!^image/!', $info['type'] ) ) {
-			$parts = pathinfo( $url );
-			$name = basename( $parts['basename'], ".{$parts['extension']}" ); // PATHINFO_FILENAME in PHP 5.2
-
-			$parts_new = pathinfo( $upload['url'] );
-			$name_new = basename( $parts_new['basename'], ".{$parts_new['extension']}" );
-		}
+		// remap image URL's
+		backfill_attachment_urls( $url, $upload['url'] );
 
 		return array(
 			'result' => true,
@@ -236,6 +230,30 @@ function image_importer_uploader(){
 		*/
 
 		return $upload;
+	}
+
+	function backfill_attachment_urls( $from_url, $to_url ) {
+		global $wpdb;
+		// remap urls in post_content
+		$wpdb->query(
+			$wpdb->prepare(
+				"
+					UPDATE {$wpdb->posts}
+					SET post_content = REPLACE(post_content, %s, %s)
+				",
+				$from_url, $to_url
+			)
+		);
+		// remap enclosure urls
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"
+					UPDATE {$wpdb->postmeta}
+					SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_key='enclosure'
+				",
+				$from_url, $to_url
+			)
+		);
 	}
 
 	$remote_url = ! empty($parameters['attachment_url']) ? $parameters['attachment_url'] : $parameters['guid'];

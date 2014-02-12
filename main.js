@@ -125,7 +125,6 @@ jQuery(document).ready(function($){
 							var obj = $.parseJSON( data );
 							if( obj.result ){
 								$( '<div class="' + obj.type + '">' + obj.name + ' was uploaded successfully.</div>' ).appendTo( divOutput );
-								new_url.push( obj.url );
 							} else{
 								$( '<div class="' + obj.type + '">' + obj.name + ' could not be uploaded because of an error. (<strong>' + obj.error_code + ':</strong> ' + obj.error_msg + ')</div>' ) .appendTo( divOutput );
 							}
