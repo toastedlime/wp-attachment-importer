@@ -3,7 +3,7 @@
  * Plugin Name: Image Importer
  * Plugin URI: http://github.com/toastedlime/image-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.3
+ * Version: 0.4
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: Apache 2.0
@@ -120,6 +120,16 @@ function image_importer_uploader(){
 
 	function process_attachment( $post, $url ) {
 		
+		$pre_process = pre_process_attachment( $post, $url );
+		if( is_wp_error( $pre_process ) )
+			return array(
+				'result' => false,
+				'type' => 'error',
+				'name' => $post['post_title'],
+				'error_code' => $pre_process->get_error_code(),
+				'error_msg' => $pre_process->get_error_message()
+			);
+
 		// if the URL is absolute, but does not contain address, then upload it assuming base_site_url
 		if ( preg_match( '|^/[\w\W]+$|', $url ) )
 			$url = rtrim( $this->base_url, '/' ) . $url;
@@ -181,6 +191,37 @@ function image_importer_uploader(){
 			'name' => $post['post_title'],
 			'url' => $upload['url']
 		);
+	}
+
+	function pre_process_attachment( $post, $url ){
+		global $wpdb;
+
+		$imported = $wpdb->get_results(
+			$wpdb->prepare(
+				"
+				SELECT ID, post_date_gmt, guid
+				FROM $wpdb->posts
+				WHERE post_type = 'attachment'
+					AND post_title = %s
+				",
+				$post['post_title']
+			)
+		);
+
+		if( $imported ){
+			foreach( $imported as $attachment ){
+				if( basename( $url ) == basename( $attachment->guid ) ){
+					if( $post['post_date_gmt'] == $attachment->post_date_gmt ){
+						$headers = wp_get_http( $url );
+						if( filesize( get_attached_file( $attachment->ID ) ) == $headers['content-length'] ){
+							return new WP_Error( 'duplicate_file_error', 'File already exists' );
+						}
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 	
 	function fetch_remote_file( $url, $post ) {
