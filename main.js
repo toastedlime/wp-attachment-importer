@@ -1,12 +1,12 @@
 jQuery(document).ready(function($){
 
-	var divInit = $( '#image-importer-init' );
+	var divInit = $( '#attachment-importer-init' );
 
 	if ( ! window.FileReader ){
 
 		$.get(
 			ajaxurl,
-			{action:'image_importer_init_failure'},
+			{action:'attachment_importer_init_failure'},
 			function( data ){
 				$( data ).appendTo( divInit );
 			});
@@ -15,7 +15,7 @@ jQuery(document).ready(function($){
 	
 		$.get(
 			ajaxurl,
-			{action:'image_importer_init_success'},
+			{action:'attachment_importer_init_success'},
 			function( data ){
 				$( data ).appendTo( divInit );
 			});
@@ -24,19 +24,19 @@ jQuery(document).ready(function($){
 			
 			var input = $( '#file' ).get(0).files[0],
 				reader = new FileReader(),
-				divOutput = $( '#image-importer-output' ),
+				divOutput = $( '#attachment-importer-output' ),
 				author1 = $( "input[name='author']:checked" ).val(),
 				author2 = $( "select[name='user']" ).val();
-
-			divOutput.empty();
 
 			if ( ! input ){
 
 				alert('Please select a file.');
 				
 			} else {
-			
-				$( '<p>Parsing the file.</p>' ).appendTo( divOutput );
+
+				divOutput.empty();
+
+				$( '<p>' + aiL10n.parsing +'</p>' ).appendTo( divOutput );
 
 				reader.readAsText(input);
 			
@@ -46,7 +46,6 @@ jQuery(document).ready(function($){
 						parser = new DOMParser(),
 						xml = parser.parseFromString( file, "text/xml" ),
 						url = [],
-						new_url = [],
 						title = [],
 						link = [],
 						pubDate = [],
@@ -91,14 +90,14 @@ jQuery(document).ready(function($){
 						}
 					});
 					
-					$( '<p>Importing the attachments...</p>' ).appendTo( divOutput );
+					$( '<p>' + aiL10n.attaching +'</p>' ).appendTo( divOutput );
 
 					function import_attachments(i){
 						$.ajax({
 							url: ajaxurl,
 							type: 'POST',
 							data: {
-								action: 'image_importer_upload',
+								action: 'attachment_importer_upload',
 								author1:author1,
 								author2:author2,
 								url:url[i],
@@ -123,23 +122,19 @@ jQuery(document).ready(function($){
 						})
 						.done(function( data, status, xhr ){
 							var obj = $.parseJSON( data );
-							if( obj.result ){
-								$( '<div class="' + obj.type + '">' + obj.name + ' was uploaded successfully.</div>' ).appendTo( divOutput );
-							} else{
-								$( '<div class="' + obj.type + '">' + obj.name + ' could not be uploaded because of an error. (<strong>' + obj.error_code + ':</strong> ' + obj.error_msg + ')</div>' ) .appendTo( divOutput );
-							}
+							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
 							i++;
 							if( postType[i] ){
 								import_attachments(i);
 							} else {
-								$( '<p>All done!</p>' ).appendTo( divOutput );
+								$( '<p>' + aiL10n.done +'</p>' ).appendTo( divOutput );
 							}
 
 						})
 						.fail(function( xhr, status, error ){
 							console.err(status);
 							console.err(error);
-							$( '<div class="error">There was an error connecting to the server</div>' ).appendTo( divOutput );
+							$( '<div class="error">' + aiL10n.ajaxFail +'</div>' ).appendTo( divOutput );
 						});
 					}
 					

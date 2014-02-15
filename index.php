@@ -1,99 +1,108 @@
 <?php
 /**
- * Plugin Name: Image Importer
- * Plugin URI: http://github.com/toastedlime/image-importer
+ * Plugin Name: Attachment Importer
+ * Plugin URI: http://github.com/toastedlime/wp-attachment-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.4
+ * Version: 0.5
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
- * License: Apache 2.0
+ * License: GPL v2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: attachment-importer
+ * Tags: importer, attachments, images, wordpress
  */
 
-function image_importer_scripts(){
+function attachment_importer_scripts(){
 
-	wp_register_script( 'image-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery' ) );
+	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery' ) );
 
 }
 
-function image_importer_add_page(){
+function attachment_importer_add_page(){
 	
-	add_media_page( 'Image Importer', 'Image Importer', 'manage_options','image-importer','image_importer_options_page' );
+	add_media_page( 'Attachment Importer', 'Attachment Importer', 'manage_options','attachment-importer','attachment_importer_options_page' );
 	
 }
 
-function image_importer_options_page(){
+function attachment_importer_options_page(){
 
-	wp_enqueue_script( 'image-importer-js' );
+	wp_enqueue_script( 'attachment-importer-js' );
+	wp_localize_script( 'attachment-importer-js', 'aiL10n', array(
+		'parsing' => __( 'Parsing the file.', 'attachment-importer' ),
+		'attaching' => __( 'Importing the attachments...', 'attachment-importer' ),
+		'done' => __( 'All done!', 'attachment-importer' ),
+		'ajaxFail' => __( 'There was an error connecting to the server.', 'attachment-importer' )
+	) );
 	
 ?>
 
-<div>
+<div class="wrap">
 
-<h2>Image Importer</h2>
+<h2><?php _e( 'Attachment Importer', 'attachment-importer' ); ?></h2>
 
 <noscript>
 
 	<div class="error">
 
-		<p>Sorry, but your browser doesn't have JavaScript enabled, and this plugin requires JavaScript.</p>
+		<p><?php _e( 'Sorry, but your browser doesn\'t have JavaScript enabled, and this plugin requires JavaScript.', 'attachment-importer' ); ?></p>
 
-		<p>Please enable JavaScript for this site to continue.</p>
+		<p><?php _e( 'Please enable JavaScript for this site to continue.', 'attachment-importer' ); ?></p>
 
 	</div>
 
 </noscript>
 
-<div id="image-importer-init"></div>
+<div id="attachment-importer-init"></div>
 
-<div id="image-importer-output"></div>
+<div id="attachment-importer-output"></div>
 
 </div>
 
 <?php
 }
 
-add_action( 'admin_enqueue_scripts', 'image_importer_scripts' );
+add_action( 'admin_enqueue_scripts', 'attachment_importer_scripts' );
 
-add_action( 'admin_menu', 'image_importer_add_page' );
+add_action( 'admin_menu', 'attachment_importer_add_page' );
 
-add_action( 'wp_ajax_image_importer_init_success', 'image_importer_init_success' );
+add_action( 'wp_ajax_attachment_importer_init_success', 'attachment_importer_init_success' );
 
-add_action( 'wp_ajax_image_importer_init_failure', 'image_importer_init_failure' );
+add_action( 'wp_ajax_attachment_importer_init_failure', 'attachment_importer_init_failure' );
 
-add_action( 'wp_ajax_image_importer_upload', 'image_importer_uploader' );
+add_action( 'wp_ajax_attachment_importer_upload', 'attachment_importer_uploader' );
 
 // AJAX functions are below this line.
 
-function image_importer_init_success(){
+function attachment_importer_init_success(){
 ?>
-	<p>Select the WordPress eXtended RSS (WXR) file and we'll try to get the images and upload them to your blog here.</p>
+	<p><?php _e( 'Select the WordPress eXtended RSS (WXR) file and we\'ll try to get the images and upload them to your blog.', 'attachment-importer' ); ?></p>
 
-	<p>Choose a WXR (.xml) file from your computer and press upload.</p>
+	<p><?php _e( 'Choose a WXR (.xml) file from your computer and press upload.', 'attachment-importer' ); ?></p>
 
 	<p><input type="file" name="file" id="file"/></p>
 
-	<p> Attribute uploaded images to: <br/>
-		<input type="radio" name="author" value=1 checked />&nbsp;Current User<br/>
-		<input type="radio" name="author" value=2 />&nbsp;User in import file<br/>
-		<input type="radio" name="author" value=3 />&nbsp;Select User: <?php wp_dropdown_users(); ?>
+	<p><?php _e( 'Attribute uploaded images to:', 'attachment-importer' ); ?><br/>
+		<input type="radio" name="author" value=1 checked />&nbsp;<?php _e( 'Current User', 'attachment-importer' ); ?><br/>
+		<input type="radio" name="author" value=2 />&nbsp;<?php _e( 'User in the import file', 'attachment-importer'); ?><br/>
+		<input type="radio" name="author" value=3 />&nbsp;<?php _e( 'Select User:', 'attachment-importer' ); ?> <?php wp_dropdown_users(); ?>
 
-	<p><button class="button">Upload</button></p>
+	<p><?php submit_button( _x( 'Upload', 'A button which will submit the attachment for processing when clicked.', 'attachment-importer'), 'secondary' ); ?></p>
 
 <?php
 die();}
 
-function image_importer_init_failure(){
+function attachment_importer_init_failure(){
 ?>
 
 <div class="error">
-	<p>Sorry, but you're using an <strong>outdated</strong> browser that doesn't support the features required to use this plugin.</p>
-	<p>Please <a href="http://www.browsehappy.com">upgrade your browser</a> in order to use this plugin.</p>
+	<p><?php _e( 'Sorry, but you\'re using an <strong>outdated</strong> browser that doesn\'t support the features required to use this plugin.', 'attachment-importer' ); ?></p>
+	<p><?php echo sprintf( __( 'You must <a href="%s">upgrade your browser</a> in order to use this plugin.', 'attachment-importer' ), 'http://browsehappy.com' ); ?></p>
 </div>
 
 <?php
 die();}
 
-function image_importer_uploader(){
+function attachment_importer_uploader(){
 
 	$parameters = array(
 		'url' => $_POST['url'],
@@ -124,10 +133,8 @@ function image_importer_uploader(){
 		if( is_wp_error( $pre_process ) )
 			return array(
 				'result' => false,
-				'type' => 'error',
-				'name' => $post['post_title'],
-				'error_code' => $pre_process->get_error_code(),
-				'error_msg' => $pre_process->get_error_message()
+				'type' => 'updated',
+				'text' => sprintf( __( '%1$s was not uploaded. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $pre_process->get_error_code(), $pre_process->get_error_message() )
 			);
 
 		// if the URL is absolute, but does not contain address, then upload it assuming base_site_url
@@ -139,21 +146,17 @@ function image_importer_uploader(){
 			return array(
 				'result' => false,
 				'type' => 'error',
-				'name' => $post['post_title'],
-				'error_code' => $upload->get_error_code(),
-				'error_msg' => $upload->get_error_message()
+				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
 
 		if ( $info = wp_check_filetype( $upload['file'] ) )
 			$post['post_mime_type'] = $info['type'];
 		else {
-			$upload = new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wordpress-importer') );
+			$upload = new WP_Error( 'attachment_processing_error', __('Invalid file type', 'attachment-importer') );
 			return array(
 				'result' => false,
 				'type' => 'error',
-				'name' => $post['post_title'],
-				'error_code' => $upload->get_error_code(),
-				'error_msg' => $upload->get_error_message()
+				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
 		}
 
@@ -188,8 +191,7 @@ function image_importer_uploader(){
 		return array(
 			'result' => true,
 			'type' => 'updated',
-			'name' => $post['post_title'],
-			'url' => $upload['url']
+			'text' => sprintf( __( '%s was uploaded successfully', 'attachment-importer' ), $post['post_title'] )
 		);
 	}
 
@@ -214,7 +216,7 @@ function image_importer_uploader(){
 					if( $post['post_date_gmt'] == $attachment->post_date_gmt ){
 						$headers = wp_get_http( $url );
 						if( filesize( get_attached_file( $attachment->ID ) ) == $headers['content-length'] ){
-							return new WP_Error( 'duplicate_file_error', 'File already exists' );
+							return new WP_Error( 'duplicate_file_notice', __( 'File already exists', 'attachment-importer' ) );
 						}
 					}
 				}
@@ -239,36 +241,26 @@ function image_importer_uploader(){
 		// request failed
 		if ( ! $headers ) {
 			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __('Remote server did not respond', 'wordpress-importer') );
+			return new WP_Error( 'import_file_error', __('Remote server did not respond', 'attachment-importer') );
 		}
 
 		// make sure the fetch was successful
 		if ( $headers['response'] != '200' ) {
 			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', sprintf( __('Remote server returned error response %1$d %2$s', 'wordpress-importer'), esc_html($headers['response']), get_status_header_desc($headers['response']) ) );
+			return new WP_Error( 'import_file_error', sprintf( __('Remote server returned error response %1$d %2$s', 'attachment-importer'), esc_html($headers['response']), get_status_header_desc($headers['response']) ) );
 		}
 
 		$filesize = filesize( $upload['file'] );
 
 		if ( isset( $headers['content-length'] ) && $filesize != $headers['content-length'] ) {
 			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __('Remote file is incorrect size', 'wordpress-importer') );
+			return new WP_Error( 'import_file_error', __('Remote file is incorrect size', 'attachment-importer') );
 		}
 
 		if ( 0 == $filesize ) {
 			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __('Zero size file downloaded', 'wordpress-importer') );
+			return new WP_Error( 'import_file_error', __('Zero size file downloaded', 'attachment-importer') );
 		}
-
-		/*
-		 * Allow uploads of any size for now.
-		 
-		$max_size = (int) $this->max_attachment_size();
-		if ( ! empty( $max_size ) && $filesize > $max_size ) {
-			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', sprintf(__('Remote file is too large, limit is %s', 'wordpress-importer'), size_format($max_size) ) );
-		}
-		*/
 
 		return $upload;
 	}
