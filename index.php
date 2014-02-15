@@ -3,13 +3,12 @@
  * Plugin Name: Attachment Importer
  * Plugin URI: http://github.com/toastedlime/wp-attachment-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.5.1
+ * Version: 0.5.2
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: GPL v2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: attachment-importer
- * Tags: importer, attachments, images, wordpress
  */
 
 function attachment_importer_scripts(){
