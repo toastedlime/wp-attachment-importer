@@ -125,7 +125,7 @@ jQuery(document).ready(function($){
 							var obj = $.parseJSON( data );
 							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
 							i++;
-							if( postType[i] ){
+							if( postType[i] && !obj.fatal ){
 								import_attachments(i);
 							} else {
 								$( '<p>' + aiL10n.done +'</p>' ).appendTo( divOutput );

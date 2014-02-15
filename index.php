@@ -3,7 +3,7 @@
  * Plugin Name: Attachment Importer
  * Plugin URI: http://github.com/toastedlime/wp-attachment-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.5
+ * Version: 0.5.1
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: GPL v2 or later
@@ -111,7 +111,7 @@ function attachment_importer_uploader(){
 	if( !check_ajax_referer( 'import-attachment-plugin', false, false ) ){
 		$nonce_error = new WP_Error( 'nonce_error', __('Are you sure you want to do this?', 'attachment-importer') );
 		echo json_encode ( array(
-			'result' => false,
+			'fatal' => true,
 			'type' => 'error',
 			'text' => sprintf( __( 'The <a href="%1$s">security key</a> provided with this request is invalid. Is someone trying to trick you to upload something you don\'t want to? If you really meant to take this action, reload your browser window and try again. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), 'http://codex.wordpress.org/WordPress_Nonces', $nonce_error->get_error_code(), $nonce_error->get_error_message() )
 		) );
@@ -146,7 +146,7 @@ function attachment_importer_uploader(){
 		$pre_process = pre_process_attachment( $post, $url );
 		if( is_wp_error( $pre_process ) )
 			return array(
-				'result' => false,
+				'fatal' => false,
 				'type' => 'updated',
 				'text' => sprintf( __( '%1$s was not uploaded. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $pre_process->get_error_code(), $pre_process->get_error_message() )
 			);
@@ -158,7 +158,7 @@ function attachment_importer_uploader(){
 		$upload = fetch_remote_file( $url, $post );
 		if ( is_wp_error( $upload ) )
 			return array(
-				'result' => false,
+				'fatal' => ( $upload->get_error_code() == 'upload_dir_error' ? true : false ),
 				'type' => 'error',
 				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
@@ -168,7 +168,7 @@ function attachment_importer_uploader(){
 		else {
 			$upload = new WP_Error( 'attachment_processing_error', __('Invalid file type', 'attachment-importer') );
 			return array(
-				'result' => false,
+				'fatal' => false,
 				'type' => 'error',
 				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
@@ -203,7 +203,7 @@ function attachment_importer_uploader(){
 		backfill_attachment_urls( $url, $upload['url'] );
 
 		return array(
-			'result' => true,
+			'fatal' => false,
 			'type' => 'updated',
 			'text' => sprintf( __( '%s was uploaded successfully', 'attachment-importer' ), $post['post_title'] )
 		);
