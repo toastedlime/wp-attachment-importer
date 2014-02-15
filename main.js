@@ -98,6 +98,7 @@ jQuery(document).ready(function($){
 							type: 'POST',
 							data: {
 								action: 'attachment_importer_upload',
+								_ajax_nonce: aiSecurity.nonce,
 								author1:author1,
 								author2:author2,
 								url:url[i],

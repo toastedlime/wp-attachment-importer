@@ -33,6 +33,9 @@ function attachment_importer_options_page(){
 		'done' => __( 'All done!', 'attachment-importer' ),
 		'ajaxFail' => __( 'There was an error connecting to the server.', 'attachment-importer' )
 	) );
+	wp_localize_script( 'attachment-importer-js', 'aiSecurity', array(
+		'nonce' => wp_create_nonce( 'import-attachment-plugin' )
+	) );
 	
 ?>
 
@@ -103,6 +106,17 @@ function attachment_importer_init_failure(){
 die();}
 
 function attachment_importer_uploader(){
+	
+	// check nonce before doing anything else
+	if( !check_ajax_referer( 'import-attachment-plugin', false, false ) ){
+		$nonce_error = new WP_Error( 'nonce_error', __('Are you sure you want to do this?', 'attachment-importer') );
+		echo json_encode ( array(
+			'result' => false,
+			'type' => 'error',
+			'text' => sprintf( __( 'The <a href="%1$s">security key</a> provided with this request is invalid. Is someone trying to trick you to upload something you don\'t want to? If you really meant to take this action, reload your browser window and try again. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), 'http://codex.wordpress.org/WordPress_Nonces', $nonce_error->get_error_code(), $nonce_error->get_error_message() )
+		) );
+		die();
+	}
 
 	$parameters = array(
 		'url' => $_POST['url'],
