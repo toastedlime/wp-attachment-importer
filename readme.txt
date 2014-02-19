@@ -3,7 +3,7 @@ Contributors: piontkowski
 Tags: importer, import, attachment, attachments, image, images, wordpress, wxr, xml
 Requires at least: 3.0
 Tested up to: 3.8.1
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,12 +14,6 @@ Import attachments from another WordPress blog using a WXR file.
 = What is this? =
 
 I found the WordPress Importer plugin is good for importing posts and comments, but is lacking when it comes to importing large attachments (like images) from large sites. My import would often time out and crash. I wrote this plugin to help with my own blog migrations, but I hope you find it useful too.
-
-== Installation ==
-
-1. Either a) download from the WordPress plugin repository, or b) upload the attachment-importer directory to your plugins directory.
-2. Navigate to Plugins -> Attachment Importer and activate.
-3. Go to Media -> Attachment Importer to run.
 
 = Usage =
 
@@ -51,4 +45,22 @@ You should have received a copy of the GNU General Public License along with thi
 
 The license and copyright applies to all resources bundled with this plugin, except as noted below:
 
-Portions of this plugin use code from [WordPress Importer](http://wordpress.org/extend/plugins/wordpress-importer/) which is distributed under the terms of the GNU GPL v2, Copyright (C) 2013 wordpressdotorg.
+Portions of this plugin use code from:
+
+* [WordPress Importer](http://wordpress.org/extend/plugins/wordpress-importer/) which is distributed under the terms of the GNU GPL v2, Copyright (C) 2013 wordpressdotorg.
+* [jQuery UI Smoothness Theme](http://jqueryui.com/themeroller/) which is distributed under the terms of MIT License, Copyright (C) 2014 jQuery Foundation and other contributors.
+
+== Installation ==
+
+1. Either a) download from the WordPress plugin repository, or b) upload the attachment-importer directory to your plugins directory.
+2. Navigate to Plugins -> Attachment Importer and activate.
+3. Go to Media -> Attachment Importer to run.
+
+== Changeset ==
+
+= 0.5.3 =
+
+* Added option to add five second delay between image ajax requests
+* Reformat Readme
+* Added jQuery tooltip
+
