@@ -1,5 +1,7 @@
 jQuery(document).ready(function($){
 
+	$( document ).tooltip();
+
 	var divInit = $( '#attachment-importer-init' );
 
 	if ( ! window.FileReader ){
@@ -20,8 +22,8 @@ jQuery(document).ready(function($){
 				$( data ).appendTo( divInit );
 			});
 
-		$( document ).on('click', '.button', function(){
-			
+		$( document ).on('click', '.button', function(){			
+
 			var input = $( '#file' ).get(0).files[0],
 				reader = new FileReader(),
 				divOutput = $( '#attachment-importer-output' ),

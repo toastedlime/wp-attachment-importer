@@ -13,7 +13,7 @@
 
 function attachment_importer_scripts(){
 
-	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery' ) );
+	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery', 'jquery-ui-tooltip' ) );
 
 }
 
@@ -35,6 +35,7 @@ function attachment_importer_options_page(){
 	wp_localize_script( 'attachment-importer-js', 'aiSecurity', array(
 		'nonce' => wp_create_nonce( 'import-attachment-plugin' )
 	) );
+	wp_enqueue_style( 'jquery-ui', plugins_url( 'inc/jquery-ui.css', __FILE__ ) );
 	
 ?>
 
@@ -88,7 +89,7 @@ function attachment_importer_init_success(){
 		<input type="radio" name="author" value=2 />&nbsp;<?php _e( 'User in the import file', 'attachment-importer'); ?><br/>
 		<input type="radio" name="author" value=3 />&nbsp;<?php _e( 'Select User:', 'attachment-importer' ); ?> <?php wp_dropdown_users(); ?>
 
-	<p><input type="checkbox" name="delay" />&nbsp;<?php _e( 'Delay file requests by at least five seconds.', 'attachment-importer' ); ?></p> 
+	<p><input type="checkbox" name="delay" />&nbsp;<?php _e( 'Delay file requests by at least five seconds.', 'attachment-importer' ); ?>&nbsp;<a href="#" title="<?php _e( 'This delay can be useful to mitigate hosts that throttle traffic when too many requests are detected from an IP address and mistaken for a DDOS attack.', 'attachment-importer' ); ?>" style="text-decoration:none;"><span class="dashicons dashicons-editor-help"></span></a></p> 
 
 	<p><?php submit_button( _x( 'Upload', 'A button which will submit the attachment for processing when clicked.', 'attachment-importer'), 'secondary' ); ?></p>
 
