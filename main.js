@@ -26,7 +26,8 @@ jQuery(document).ready(function($){
 				reader = new FileReader(),
 				divOutput = $( '#attachment-importer-output' ),
 				author1 = $( "input[name='author']:checked" ).val(),
-				author2 = $( "select[name='user']" ).val();
+				author2 = $( "select[name='user']" ).val(),
+				delay = ( $( "input[name='delay']" ).is( ':checked' ) ? 5000 : 0 );
 
 			if ( ! input ){
 
@@ -126,7 +127,9 @@ jQuery(document).ready(function($){
 							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
 							i++;
 							if( postType[i] && !obj.fatal ){
-								import_attachments(i);
+								setTimeout( function(){
+									import_attachments(i)
+								}, delay );
 							} else {
 								$( '<p>' + aiL10n.done +'</p>' ).appendTo( divOutput );
 							}

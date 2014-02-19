@@ -88,6 +88,8 @@ function attachment_importer_init_success(){
 		<input type="radio" name="author" value=2 />&nbsp;<?php _e( 'User in the import file', 'attachment-importer'); ?><br/>
 		<input type="radio" name="author" value=3 />&nbsp;<?php _e( 'Select User:', 'attachment-importer' ); ?> <?php wp_dropdown_users(); ?>
 
+	<p><input type="checkbox" name="delay" />&nbsp;<?php _e( 'Delay file requests by at least five seconds.', 'attachment-importer' ); ?></p> 
+
 	<p><?php submit_button( _x( 'Upload', 'A button which will submit the attachment for processing when clicked.', 'attachment-importer'), 'secondary' ); ?></p>
 
 <?php
