@@ -69,27 +69,27 @@ jQuery(document).ready(function($){
 					
 					$( xml ).find( 'item' ).each(function(){
 					
-						var xml_post_type = $( this ).find( 'post_type' ).text();
+						var xml_post_type = $( this ).find( 'wp\\:post_type, post_type' ).text();
 						
 						if( xml_post_type == 'attachment' ){ // We're only looking for image attachments.
-							url.push( $( this ).find( 'attachment_url' ).text() );
+							url.push( $( this ).find( 'wp\\:attachment_url, attachment_url' ).text() );
 							title.push( $( this ).find( 'title' ).text() );
 							link.push( $( this ).find( 'link' ).text() );
 							pubDate.push( $( this ).find( 'pubDate' ).text() );
-							creator.push( $( this ).find( 'creator' ).text() );
+							creator.push( $( this ).find( 'dc\\:creator, creator' ).text() );
 							guid.push( $( this ).find( 'guid' ).text() );
-							postID.push( $( this ).find( 'post_id' ).text() );
-							postDate.push( $( this ).find( 'post_date' ).text() );
-							postDateGMT.push( $( this ).find( 'post_date_gmt' ).text() );
-							commentStatus.push( $( this ).find( 'comment_status' ).text() );
-							pingStatus.push( $( this ).find( 'ping_status' ).text() );
-							postName.push( $( this ).find( 'post_name' ).text() );
-							status.push( $( this ).find( 'status' ).text() );
-							postParent.push( $( this ).find( 'post_parent' ).text() );
-							menuOrder.push( $( this ).find( 'menu_order' ).text() );
+							postID.push( $( this ).find( 'wp\\:post_id, post_id' ).text() );
+							postDate.push( $( this ).find( 'wp\\:post_date, post_date' ).text() );
+							postDateGMT.push( $( this ).find( 'wp\\:post_date_gmt, post_date_gmt' ).text() );
+							commentStatus.push( $( this ).find( 'wp\\:comment_status, comment_status' ).text() );
+							pingStatus.push( $( this ).find( 'wp\\:ping_status, ping_status' ).text() );
+							postName.push( $( this ).find( 'wp\\:post_name, post_name' ).text() );
+							status.push( $( this ).find( 'wp\\:status, status' ).text() );
+							postParent.push( $( this ).find( 'wp\\:post_parent, post_parent' ).text() );
+							menuOrder.push( $( this ).find( 'wp\\:menu_order, menu_order' ).text() );
 							postType.push( xml_post_type );
-							postPassword.push( $( this ).find( 'post_password' ).text() );
-							isSticky.push( $( this ).find( 'is_sticky' ).text() );
+							postPassword.push( $( this ).find( 'wp\\:post_password, post_password' ).text() );
+							isSticky.push( $( this ).find( 'wp\\:is_sticky, is_sticky' ).text() );
 						}
 					});
 					
