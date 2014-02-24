@@ -3,7 +3,7 @@ Contributors: piontkowski
 Tags: importer, import, attachment, attachments, image, images, wordpress, wxr, xml
 Requires at least: 3.0
 Tested up to: 3.8.1
-Stable tag: 0.5.3
+Stable tag: 0.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,9 +54,14 @@ Portions of this plugin use code from:
 
 1. Either a) download from the WordPress plugin repository, or b) upload the attachment-importer directory to your plugins directory.
 2. Navigate to Plugins -> Attachment Importer and activate.
-3. Go to Media -> Attachment Importer to run.
+3. Go to Tools -> Import -> Attachment Importer to run.
 
 == Changeset ==
+
+= 0.5.4 =
+
+* Fixed issue reading namespaces in import file that casued the program not to work in FireFox and Internet Explorer
+* Moved plugin to Import menu from the Media menu.
 
 = 0.5.3 =
 
