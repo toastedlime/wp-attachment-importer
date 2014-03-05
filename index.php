@@ -13,7 +13,7 @@
 
 function attachment_importer_scripts(){
 
-	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery', 'jquery-ui-tooltip' ) );
+	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery', 'jquery-ui-tooltip', 'jquery-ui-progressbar' ) );
 
 }
 
@@ -28,7 +28,7 @@ function attachment_importer_options_page(){
 	wp_enqueue_script( 'attachment-importer-js' );
 	wp_localize_script( 'attachment-importer-js', 'aiL10n', array(
 		'parsing' => __( 'Parsing the file.', 'attachment-importer' ),
-		'attaching' => __( 'Importing the attachments...', 'attachment-importer' ),
+		'importing' => __( 'Total attachments imported: ', 'attachment-importer' ),
 		'done' => __( 'All done!', 'attachment-importer' ),
 		'ajaxFail' => __( 'There was an error connecting to the server.', 'attachment-importer' )
 	) );
@@ -36,6 +36,7 @@ function attachment_importer_options_page(){
 		'nonce' => wp_create_nonce( 'import-attachment-plugin' )
 	) );
 	wp_enqueue_style( 'jquery-ui', plugins_url( 'inc/jquery-ui.css', __FILE__ ) );
+	wp_enqueue_style( 'attachment-importer', plugins_url( 'inc/style.css', __FILE__ ) );
 	
 ?>
 
@@ -56,6 +57,8 @@ function attachment_importer_options_page(){
 </noscript>
 
 <div id="attachment-importer-init"></div>
+
+<div id="attachment-importer-progressbar"><div id="attachment-importer-progresslabel"></div></div>
 
 <div id="attachment-importer-output"></div>
 
@@ -149,7 +152,7 @@ function attachment_importer_uploader(){
 		if( is_wp_error( $pre_process ) )
 			return array(
 				'fatal' => false,
-				'type' => 'updated',
+				'type' => 'error',
 				'text' => sprintf( __( '%1$s was not uploaded. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $pre_process->get_error_code(), $pre_process->get_error_message() )
 			);
 

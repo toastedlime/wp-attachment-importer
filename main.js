@@ -29,7 +29,9 @@ jQuery(document).ready(function($){
 				divOutput = $( '#attachment-importer-output' ),
 				author1 = $( "input[name='author']:checked" ).val(),
 				author2 = $( "select[name='user']" ).val(),
-				delay = ( $( "input[name='delay']" ).is( ':checked' ) ? 5000 : 0 );
+				delay = ( $( "input[name='delay']" ).is( ':checked' ) ? 5000 : 0 ),
+				progressBar = $( "#attachment-importer-progressbar" ),
+				progressLabel = $( "#attachment-importer-progresslabel" );
 
 			if ( ! input ){
 
@@ -39,7 +41,12 @@ jQuery(document).ready(function($){
 
 				divOutput.empty();
 
-				$( '<p>' + aiL10n.parsing +'</p>' ).appendTo( divOutput );
+				$( function(){
+					progressBar.progressbar({
+						value: false
+					});
+					progressLabel.text( aiL10n.parsing );
+				});
 
 				reader.readAsText(input);
 			
@@ -92,10 +99,21 @@ jQuery(document).ready(function($){
 							isSticky.push( $( this ).find( 'wp\\:is_sticky, is_sticky' ).text() );
 						}
 					});
-					
-					$( '<p>' + aiL10n.attaching +'</p>' ).appendTo( divOutput );
 
-					function import_attachments(i){
+					$( function(){
+					    progressBar.progressbar({
+					        value:0,
+					        max: postType.length,
+					        change: function(){
+					            progressLabel.text( aiL10n.importing + progressBar.progressbar( "value" ) + "/" + postType.length );
+					        },
+					        complete: function(){
+					            progressLabel.text( aiL10n.done );
+					        }
+					    });
+					});
+
+					function import_attachments( i ){
 						$.ajax({
 							url: ajaxurl,
 							type: 'POST',
@@ -126,14 +144,17 @@ jQuery(document).ready(function($){
 						})
 						.done(function( data, status, xhr ){
 							var obj = $.parseJSON( data );
-							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
+							if( obj.type == "error" ){
+    							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
+                            }
 							i++;
+							progressBar.progressbar( "value", progressBar.progressbar( "value" ) + 1 );
 							if( postType[i] && !obj.fatal ){
 								setTimeout( function(){
-									import_attachments(i)
+									import_attachments( i )
 								}, delay );
 							} else {
-								$( '<p>' + aiL10n.done +'</p>' ).appendTo( divOutput );
+								return false;
 							}
 
 						})

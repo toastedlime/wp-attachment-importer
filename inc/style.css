@@ -1,0 +1,8 @@
+.ui-progressbar{
+    position:relative;
+}
+#attachment-importer-progresslabel{
+    position:absolute;
+    top:4px;
+    left:1%;
+}
