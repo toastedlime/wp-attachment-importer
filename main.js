@@ -174,7 +174,13 @@ jQuery(document).ready(function($){
 						});
 					}
 					
-					import_attachments( 0 );
+					if( postType[0] ){
+					    import_attachments( 0 );
+					} else{
+					    progressBar.progressbar( "value", pbMax );
+						progressLabel.text( aiL10n.pbAjaxFail );
+						$( '<div class="error">' + aiL10n.noAttachments +'</div>' ).appendTo( divOutput );
+					}
 					
 				}
 				

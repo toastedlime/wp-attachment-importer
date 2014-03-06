@@ -28,11 +28,12 @@ function attachment_importer_options_page(){
 	wp_enqueue_script( 'attachment-importer-js' );
 	wp_localize_script( 'attachment-importer-js', 'aiL10n', array(
 	    'emptyInput' => __( 'Please select a file.', 'attachment-importer' ),
+	    'noAttachments' => __( 'There were no attachment files found in the import file.', 'attachment-importer' ),
 		'parsing' => __( 'Parsing the file.', 'attachment-importer' ),
 		'importing' => __( 'Total attachments imported: ', 'attachment-importer' ),
 		'done' => __( 'All done!', 'attachment-importer' ),
 		'ajaxFail' => __( 'There was an error connecting to the server.', 'attachment-importer' ),
-		'pbAjaxFail' => __( 'The program could not run. Check the error log or your JavaScript console for more information', 'attachment-importer' ),
+		'pbAjaxFail' => __( 'The program could not run. Check the error log below or your JavaScript console for more information', 'attachment-importer' ),
 		'fatalUpload' => __( 'There was a fatal error. Check the last entry in the error log below.', 'attachment-importer' )
 	) );
 	wp_localize_script( 'attachment-importer-js', 'aiSecurity', array(
