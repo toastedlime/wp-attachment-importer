@@ -35,7 +35,7 @@ jQuery(document).ready(function($){
 
 			if ( ! input ){
 
-				alert('Please select a file.');
+				alert( aiL10n.emptyInput );
 				
 			} else {
 
@@ -99,13 +99,15 @@ jQuery(document).ready(function($){
 							isSticky.push( $( this ).find( 'wp\\:is_sticky, is_sticky' ).text() );
 						}
 					});
+					
+					var pbMax = postType.length;
 
 					$( function(){
 					    progressBar.progressbar({
 					        value:0,
 					        max: postType.length,
 					        change: function(){
-					            progressLabel.text( aiL10n.importing + progressBar.progressbar( "value" ) + "/" + postType.length );
+					            progressLabel.text( aiL10n.importing + progressBar.progressbar( "value" ) + "/" + pbMax );
 					        },
 					        complete: function(){
 					            progressLabel.text( aiL10n.done );
@@ -144,12 +146,17 @@ jQuery(document).ready(function($){
 						})
 						.done(function( data, status, xhr ){
 							var obj = $.parseJSON( data );
-							if( obj.type == "error" ){
-    							$( '<div class="' + obj.type + '">' + obj.text + '</div>' ).appendTo( divOutput );
-                            }
+							if( obj.type == "error" && !obj.fatal ){
+    							    $( '<p>' + obj.text + '</p>' ).appendTo( divOutput );
+    					    }
 							i++;
 							progressBar.progressbar( "value", progressBar.progressbar( "value" ) + 1 );
-							if( postType[i] && !obj.fatal ){
+							if( obj.fatal ){
+							    progressBar.progressbar( "value", pbMax );
+							    progressLabel.text( aiL10n.fatalUpload );
+							    $( '<div class="' + obj.type + '">' + obj.text +'</div>' ).appendTo( divOutput );
+							    return false;
+							} else if( postType[i] ){
 								setTimeout( function(){
 									import_attachments( i )
 								}, delay );
@@ -159,8 +166,10 @@ jQuery(document).ready(function($){
 
 						})
 						.fail(function( xhr, status, error ){
-							console.err(status);
-							console.err(error);
+							console.error(status);
+							console.error(error);
+							progressBar.progressbar( "value", pbMax );
+							progressLabel.text( aiL10n.pbAjaxFail );
 							$( '<div class="error">' + aiL10n.ajaxFail +'</div>' ).appendTo( divOutput );
 						});
 					}
