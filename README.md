@@ -1,15 +1,20 @@
-=== Attachment Importer ===
-
+Attachment Importer
+===================
 Import attachments from another WordPress blog using a WXR file.
 
-== Description ==
-
-= What is this? =
-
+What is this?
+-------------
 I found the WordPress Importer plugin is good for importing posts and comments, but is lacking when it comes to importing large attachments (like images) from large sites. My import would often time out and crash. I wrote this plugin to help with my own blog migrations, but I hope you find it useful too.
 
-= Usage =
 
+Installation
+------------
+1. Either a) download from the WordPress plugin repository, or b) upload the attachment-importer directory to your plugins directory.
+2. Navigate to Plugins -> Attachment Importer and activate.
+3. Go to Tools -> Import -> Attachment Importer to run.
+
+Usage
+-----
 0. As a prerequisite, import your WXR file using the WordPress importer, but do not select the option to Download and Import Attachments. I have found that an import file up to 15MB big will work as long as you don't import attachments.
 1. Navigate to the Attachment Importer screen.
 2. Select your WXR export file.
@@ -21,12 +26,12 @@ I found the WordPress Importer plugin is good for importing posts and comments, 
    * Same upload date
    * Same file size
 
-= How it works. =
-
+How it works
+------------
 This plugin uses [FileReader](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) and to parse the XML file in the browser, then uses ajax to request WordPress perform individual uploads. 
 
-= License =
-
+License
+-------
 Attachment Importer - A plugin for WordPress to import attachments from another blog using a WXR file.
 Copyright (C) 2014 Toasted Lime
 
@@ -42,22 +47,3 @@ Portions of this plugin use code from:
 
 * [WordPress Importer](http://wordpress.org/extend/plugins/wordpress-importer/) which is distributed under the terms of the GNU GPL v2, Copyright (C) 2013 wordpressdotorg.
 * [jQuery UI Smoothness Theme](http://jqueryui.com/themeroller/) which is distributed under the terms of MIT License, Copyright (C) 2014 jQuery Foundation and other contributors.
-
-== Installation ==
-
-1. Either a) download from the WordPress plugin repository, or b) upload the attachment-importer directory to your plugins directory.
-2. Navigate to Plugins -> Attachment Importer and activate.
-3. Go to Tools -> Import -> Attachment Importer to run.
-
-== Changeset ==
-
-= 0.5.4 =
-
-* Fixed issue reading namespaces in import file that casued the program not to work in FireFox and Internet Explorer
-* Moved plugin to Import menu from the Media menu.
-
-= 0.5.3 =
-
-* Added option to add five second delay between image ajax requests
-* Reformat Readme
-* Added jQuery tooltip
