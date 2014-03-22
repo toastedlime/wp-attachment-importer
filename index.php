@@ -167,7 +167,7 @@ function attachment_importer_uploader(){
 		$upload = fetch_remote_file( $url, $post );
 		if ( is_wp_error( $upload ) )
 			return array(
-				'fatal' => ( $upload->get_error_code() == 'upload_dir_error' ? true : false ),
+				'fatal' => ( $upload->get_error_code() == 'upload_dir_error' && $upload->get_error_message() != 'Invalid file type' ? true : false ),
 				'type' => 'error',
 				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
