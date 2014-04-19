@@ -145,22 +145,36 @@ jQuery(document).ready(function($){
 							}
 						})
 						.done(function( data, status, xhr ){
+						    // Parse the response.
 							var obj = $.parseJSON( data );
+							
+							// If a non-fatal error occurs, note it and move on.
 							if( obj.type == "error" && !obj.fatal ){
     							    $( '<p>' + obj.text + '</p>' ).appendTo( divOutput );
     					    }
+    					    
+    					    // Increment the internal counter and progress bar.
 							i++;
 							progressBar.progressbar( "value", progressBar.progressbar( "value" ) + 1 );
+							
+							// If a fatal error occurs, stop the program and print the error to the browser.
 							if( obj.fatal ){
 							    progressBar.progressbar( "value", pbMax );
 							    progressLabel.text( aiL10n.fatalUpload );
 							    $( '<div class="' + obj.type + '">' + obj.text +'</div>' ).appendTo( divOutput );
 							    return false;
-							} else if( postType[i] ){
+							} 
+							
+							// If every thing is normal, but we still have posts to process, 
+							// then continue with the program.
+							else if( postType[i] ){
 								setTimeout( function(){
 									import_attachments( i )
 								}, delay );
-							} else {
+							} 
+							
+							// Getting this far means there are no more attachments, so stop the program.
+							else {
 								return false;
 							}
 
