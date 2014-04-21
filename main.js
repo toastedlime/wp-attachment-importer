@@ -106,16 +106,18 @@ jQuery(document).ready(function($){
 					    progressBar.progressbar({
 					        value:0,
 					        max: postType.length,
-					        change: function(){
-					            progressLabel.text( aiL10n.importing + progressBar.progressbar( "value" ) + "/" + pbMax );
-					        },
 					        complete: function(){
 					            progressLabel.text( aiL10n.done );
 					        }
 					    });
 					});
+					
+					// Define counter variable outside the import attachments function
+					// to keep track of the failed attachments to re-import them.
+					var failedAttachments = 0;
 
 					function import_attachments( i ){
+					    progressLabel.text( aiL10n.importing + '" ' + title[i] + '". ' + aiL10n.progress + progressBar.progressbar( "value" ) + "/" + pbMax );
 						$.ajax({
 							url: ajaxurl,
 							type: 'POST',
@@ -148,36 +150,33 @@ jQuery(document).ready(function($){
 						    // Parse the response.
 							var obj = $.parseJSON( data );
 							
+							// If error shows the server did not respond,
+							// try the upload again, to a max of 3 tries.
+							if( obj.message == "Remote server did not respond" && failedAttachments < 5 ){
+							    failedAttachments++;
+							    progressLabel.text( aiL10n.retrying + '"' + title[i] + '". ' + aiL10n.progress + progressBar.progressbar( "value" ) + "/" + pbMax );
+							    setTimeout( function(){
+							        import_attachments( i );
+							    }, 5000 );
+							}
+							
 							// If a non-fatal error occurs, note it and move on.
-							if( obj.type == "error" && !obj.fatal ){
+							else if( obj.type == "error" && !obj.fatal ){
     							    $( '<p>' + obj.text + '</p>' ).appendTo( divOutput );
+    							    next_image(i);
     					    }
     					    
-    					    // Increment the internal counter and progress bar.
-							i++;
-							progressBar.progressbar( "value", progressBar.progressbar( "value" ) + 1 );
-							
 							// If a fatal error occurs, stop the program and print the error to the browser.
-							if( obj.fatal ){
+							else if( obj.fatal ){
 							    progressBar.progressbar( "value", pbMax );
 							    progressLabel.text( aiL10n.fatalUpload );
 							    $( '<div class="' + obj.type + '">' + obj.text +'</div>' ).appendTo( divOutput );
 							    return false;
-							} 
-							
-							// If every thing is normal, but we still have posts to process, 
-							// then continue with the program.
-							else if( postType[i] ){
-								setTimeout( function(){
-									import_attachments( i )
-								}, delay );
-							} 
-							
-							// Getting this far means there are no more attachments, so stop the program.
-							else {
-								return false;
 							}
-
+							
+							else { // Moving on.
+							    next_image(i);
+							}
 						})
 						.fail(function( xhr, status, error ){
 							console.error(status);
@@ -186,6 +185,26 @@ jQuery(document).ready(function($){
 							progressLabel.text( aiL10n.pbAjaxFail );
 							$( '<div class="error">' + aiL10n.ajaxFail +'</div>' ).appendTo( divOutput );
 						});
+					}
+					
+					function next_image( i ){
+					    // Increment the internal counter and progress bar.
+				        i++;
+				        progressBar.progressbar( "value", progressBar.progressbar( "value" ) + 1 );
+				        failedAttachments = 0;
+				
+				        // If every thing is normal, but we still have posts to process, 
+				        // then continue with the program.
+				        if( postType[i] ){
+					        setTimeout( function(){
+						        import_attachments( i )
+					        }, delay );
+				        } 
+				
+				        // Getting this far means there are no more attachments, so stop the program.
+				        else {
+					        return false;
+				        }
 					}
 					
 					if( postType[0] ){

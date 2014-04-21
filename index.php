@@ -3,7 +3,7 @@
  * Plugin Name: Attachment Importer
  * Plugin URI: http://github.com/toastedlime/wp-attachment-importer
  * Description: Imports images from a WordPress XML export file. This is useful if you have a large number of images to import and your server times out while importing using the WordPress Importer plugin.
- * Version: 0.5.6
+ * Version: 0.6.0
  * Author: Toasted Lime
  * Author URI: http://www.toastedlime.com
  * License: GPL v2 or later
@@ -13,7 +13,7 @@
 
 function attachment_importer_scripts(){
 
-	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery', 'jquery-ui-tooltip', 'jquery-ui-progressbar' ) );
+	wp_register_script( 'attachment-importer-js', plugins_url( 'main.js', __FILE__ ), array( 'jquery', 'jquery-ui-tooltip', 'jquery-ui-progressbar' ), 20140421, true );
 
 }
 
@@ -30,7 +30,9 @@ function attachment_importer_options_page(){
 	    'emptyInput' => __( 'Please select a file.', 'attachment-importer' ),
 	    'noAttachments' => __( 'There were no attachment files found in the import file.', 'attachment-importer' ),
 		'parsing' => __( 'Parsing the file.', 'attachment-importer' ),
-		'importing' => __( 'Total attachments imported: ', 'attachment-importer' ),
+		'importing' => __( 'Importing file ', 'attachment-importer' ),
+		'progress' => __( 'Overall progress: ', 'attachment-importer' ),
+		'retrying' => __( 'An error occured. In 5 seconds, retrying file ', 'attachment-importer' ),
 		'done' => __( 'All done!', 'attachment-importer' ),
 		'ajaxFail' => __( 'There was an error connecting to the server.', 'attachment-importer' ),
 		'pbAjaxFail' => __( 'The program could not run. Check the error log below or your JavaScript console for more information', 'attachment-importer' ),
@@ -122,6 +124,8 @@ function attachment_importer_uploader(){
 		echo json_encode ( array(
 			'fatal' => true,
 			'type' => 'error',
+	        'code' => $nonce_error->get_error_code(),
+			'message' => $nonce_error->get_error_message(),
 			'text' => sprintf( __( 'The <a href="%1$s">security key</a> provided with this request is invalid. Is someone trying to trick you to upload something you don\'t want to? If you really meant to take this action, reload your browser window and try again. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), 'http://codex.wordpress.org/WordPress_Nonces', $nonce_error->get_error_code(), $nonce_error->get_error_message() )
 		) );
 		die();
@@ -157,6 +161,8 @@ function attachment_importer_uploader(){
 			return array(
 				'fatal' => false,
 				'type' => 'error',
+				'code' => $pre_process->get_error_code(),
+				'message' => $pre_process->get_error_message(),
 				'text' => sprintf( __( '%1$s was not uploaded. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $pre_process->get_error_code(), $pre_process->get_error_message() )
 			);
 
@@ -169,6 +175,8 @@ function attachment_importer_uploader(){
 			return array(
 				'fatal' => ( $upload->get_error_code() == 'upload_dir_error' && $upload->get_error_message() != 'Invalid file type' ? true : false ),
 				'type' => 'error',
+				'code' => $upload->get_error_code(),
+				'message' => $upload->get_error_message(),
 				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
 
@@ -179,6 +187,8 @@ function attachment_importer_uploader(){
 			return array(
 				'fatal' => false,
 				'type' => 'error',
+				'code' => $upload->get_error_code(),
+				'message' => $upload->get_error_message(),
 				'text' => sprintf( __( '%1$s could not be uploaded because of an error. (<strong>%2$s</strong>: %3$s)', 'attachment-importer' ), $post['post_title'], $upload->get_error_code(), $upload->get_error_message() )
 			);
 		}
