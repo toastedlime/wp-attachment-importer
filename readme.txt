@@ -59,6 +59,7 @@ Portions of this plugin use code from:
 == Changeset ==
 
 = 0.6.0 =
+Should not get "Remote server did not respond" as often.
 
 = 0.5.6 =
 
