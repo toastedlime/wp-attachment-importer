@@ -321,8 +321,14 @@ function attachment_importer_uploader(){
 			)
 		);
 	}
-
-	$remote_url = ! empty($parameters['attachment_url']) ? $parameters['attachment_url'] : $parameters['guid'];
+	
+	if(!empty($parameters['attachment_url'])) {
+		$remote_url = $parameters['attachment_url'];
+	} elseif(!empty($parameters['url'])) {
+		$remote_url = $parameters['url'];
+	} else {
+		$remote_url = $parameters['guid'];
+	}
 	
 	echo json_encode( process_attachment( $parameters, $remote_url ) );
 
