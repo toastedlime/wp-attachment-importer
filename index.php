@@ -285,9 +285,13 @@ function attachment_importer_uploader(){
 
 		$filesize = filesize( $upload['file'] );
 
-		if ( isset( $headers['content-length'] ) && $filesize != $headers['content-length'] ) {
-			@unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __('Remote file is incorrect size', 'attachment-importer') );
+		// Gzip encoding results in a different content-length being transmitted than the actual filesize.
+		if ( isset( $headers['content-encoding']) && $headers['content-encoding'] !== 'gzip') {
+			if ( isset( $headers['content-length'] ) && $filesize != $headers['content-length'] ) {
+				@unlink( $upload['file'] );
+				var_dump($headers);die();
+				return new WP_Error( 'import_file_error', __('Remote file '.$url.' is incorrect size, expected '.$headers['content-length'].', got '.$filesize, 'attachment-importer') );
+			}
 		}
 
 		if ( 0 == $filesize ) {
